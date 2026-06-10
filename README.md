@@ -141,8 +141,13 @@ Kevin ersetzt den folgenden Platzhalter mit einem LiaScript-kompatiblen PlantUML
 @startuml
 skinparam classAttributeIconSize 0
 
+class Gruppe {
+    - name: string
+    + Name: string <<get>>
+}
+
 class Mannschaft {
-    - Name: string
+    - name: string
     + Name: string <<get>>
 }
 
@@ -151,8 +156,6 @@ class Spiel {
     - datum: DateTime
     - uhrzeit: TimeSpan
     - ergebnis: string
-    - heimMannschaft: Mannschaft
-    - auswaertsMannschaft: Mannschaft
     + SpielId: string <<get>>
     + Ergebnis: string <<get>>
     + setErgebnis(ergebnis: string): void
@@ -177,8 +180,6 @@ class Wette {
     - wettTyp: string
     - quote: double
     - einsatz: double
-    - benutzer: Benutzer
-    - spiel: Spiel
     + auswerten(ergebnis: string): double
 }
 
@@ -196,17 +197,17 @@ class CommandHandler {
     + executeResult(spielId: string, result: string): void
 }
 
+Gruppe "1" *-- "*" Mannschaft : enthält
+Spiel "*" -- "1" Mannschaft : heim
+Spiel "*" -- "1" Mannschaft : auswärts
 Spiel "1" *-- "*" WettQuote : besitzt
-Spiel "1" -- "1" Mannschaft : heim
-Spiel "1" -- "1" Mannschaft : auswärts
 Wette "*" -- "1" Benutzer : platziert von
 Wette "*" -- "1" Spiel : bezieht sich auf
 CommandHandler ..> PersistenceManager : nutzt
 CommandHandler ..> Spiel : verwaltet
 CommandHandler ..> Wette : verwaltet
 
-note right of CommandHandler : Implementiert Befehle:
-new, print, set, get, bid, result
+note right of CommandHandler : Implementiert Befehle: new, print, set, get, bid, result
 @enduml
 ```
 @plantUML.eval(png)
