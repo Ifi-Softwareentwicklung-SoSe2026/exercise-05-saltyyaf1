@@ -19,7 +19,7 @@ tags: [Sommersemester2026, Softwareentwicklung, Übung05]
 
 -->
 
-[![LiaScript Course](https://raw.githubusercontent.com/LiaScript/LiaScript/master/badges/course.svg)](https://liascript.github.io/course/?https://raw.githubusercontent.com/Ifi-Softwareentwicklung-SoSe2026/exercise_05/refs/heads/main/README.md)
+[![LiaScript Course](https://raw.githubusercontent.com/LiaScript/LiaScript/master/badges/course.svg)](https://liascript.github.io/course/?https://raw.githubusercontent.com/Ifi-Softwareentwicklung-SoSe2026/exercise-05-saltyyaf1/refs/heads/main/README.md)
 
 # Aufgabe 05
 
@@ -136,4 +136,78 @@ Kevin ersetzt den folgenden Platzhalter mit einem LiaScript-kompatiblen PlantUML
 - [plantUml Editor](https://pantuml.com)
 - paste and copy your code! Mit Reloads verlieren Sie Ihre Eingaben, daher vorher sichern!
 
-<!-- kevin:uml-diagram -->
+<!-- kevin-uml:start -->
+```text @plantUML
+@startuml
+skinparam classAttributeIconSize 0
+
+class Mannschaft {
+    - Name: string
+    + Name: string <<get>>
+}
+
+class Spiel {
+    - spielId: string
+    - datum: DateTime
+    - uhrzeit: TimeSpan
+    - ergebnis: string
+    - heimMannschaft: Mannschaft
+    - auswaertsMannschaft: Mannschaft
+    + SpielId: string <<get>>
+    + Ergebnis: string <<get>>
+    + setErgebnis(ergebnis: string): void
+}
+
+class WettQuote {
+    - wettTyp: string
+    - quote: double
+    + WettTyp: string <<get>>
+    + Quote: double <<get>>
+}
+
+class Benutzer {
+    - name: string
+    - guthaben: double
+    + Name: string <<get>>
+    + Guthaben: double <<get>>
+    + updateGuthaben(betrag: double): void
+}
+
+class Wette {
+    - wettTyp: string
+    - quote: double
+    - einsatz: double
+    - benutzer: Benutzer
+    - spiel: Spiel
+    + auswerten(ergebnis: string): double
+}
+
+class PersistenceManager {
+    + saveToJson(filePath: string, data: object): void
+    + loadFromJson<T>(filePath: string): T
+}
+
+class CommandHandler {
+    + executeNew(): void
+    + executePrint(): void
+    + executeSet(spielId: string, typ: string, quote: double): void
+    + executeGet(spielId: string, typ: string): void
+    + executeBid(player: string, spielId: string, typ: string, amount: double): void
+    + executeResult(spielId: string, result: string): void
+}
+
+Spiel "1" *-- "*" WettQuote : besitzt
+Spiel "1" -- "1" Mannschaft : heim
+Spiel "1" -- "1" Mannschaft : auswärts
+Wette "*" -- "1" Benutzer : platziert von
+Wette "*" -- "1" Spiel : bezieht sich auf
+CommandHandler ..> PersistenceManager : nutzt
+CommandHandler ..> Spiel : verwaltet
+CommandHandler ..> Wette : verwaltet
+
+note right of CommandHandler : Implementiert Befehle:
+new, print, set, get, bid, result
+@enduml
+```
+@plantUML.eval(png)
+<!-- kevin-uml:end -->
