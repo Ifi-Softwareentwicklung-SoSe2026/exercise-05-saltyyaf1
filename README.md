@@ -183,12 +183,27 @@ class Wette {
     + auswerten(ergebnis: string): double
 }
 
+class BettingSystemState {
+    - spiele: List<Spiel>
+    - benutzer: List<Benutzer>
+    - wetten: List<Wette>
+    - gruppen: List<Gruppe>
+    + addSpiel(spiel: Spiel): void
+    + addBenutzer(benutzer: Benutzer): void
+    + addWette(wette: Wette): void
+    + addGruppe(gruppe: Gruppe): void
+    + findSpielById(id: string): Spiel
+    + findBenutzerByName(name: string): Benutzer
+}
+
 class PersistenceManager {
-    + saveToJson(filePath: string, data: object): void
-    + loadFromJson<T>(filePath: string): T
+    + saveStateToJson(filePath: string, state: BettingSystemState): void
+    + loadStateFromJson(filePath: string): BettingSystemState
 }
 
 class CommandHandler {
+    - state: BettingSystemState
+    - persistence: PersistenceManager
     + executeNew(): void
     + executePrint(): void
     + executeSet(spielId: string, typ: string, quote: double): void
@@ -203,11 +218,17 @@ Spiel "*" -- "1" Mannschaft : auswärts
 Spiel "1" *-- "*" WettQuote : besitzt
 Wette "*" -- "1" Benutzer : platziert von
 Wette "*" -- "1" Spiel : bezieht sich auf
-CommandHandler ..> PersistenceManager : nutzt
-CommandHandler ..> Spiel : verwaltet
-CommandHandler ..> Wette : verwaltet
 
-note right of CommandHandler : Implementiert Befehle: new, print, set, get, bid, result
+BettingSystemState "1" *-- "*" Spiel
+BettingSystemState "1" *-- "*" Benutzer
+BettingSystemState "1" *-- "*" Wette
+BettingSystemState "1" *-- "*" Gruppe
+
+CommandHandler ..> BettingSystemState : verwaltet
+CommandHandler ..> PersistenceManager : nutzt
+PersistenceManager ..> BettingSystemState : speichert/lädt
+
+note right of BettingSystemState : Zentrale Speicherklasse für den Systemzustand
 @enduml
 ```
 @plantUML.eval(png)
