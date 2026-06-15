@@ -19,7 +19,7 @@ tags: [Sommersemester2026, Softwareentwicklung, Übung05]
 
 -->
 
-[![LiaScript Course](https://raw.githubusercontent.com/LiaScript/LiaScript/master/badges/course.svg)](https://liascript.github.io/course/?https://raw.githubusercontent.com/Ifi-Softwareentwicklung-SoSe2026/exercise_05/refs/heads/main/README.md)
+[![LiaScript Course](https://raw.githubusercontent.com/LiaScript/LiaScript/master/badges/course.svg)](https://liascript.github.io/course/?https://raw.githubusercontent.com/Ifi-Softwareentwicklung-SoSe2026/exercise-05-saltyyaf1/refs/heads/main/README.md)
 
 # Aufgabe 05
 
@@ -136,4 +136,100 @@ Kevin ersetzt den folgenden Platzhalter mit einem LiaScript-kompatiblen PlantUML
 - [plantUml Editor](https://pantuml.com)
 - paste and copy your code! Mit Reloads verlieren Sie Ihre Eingaben, daher vorher sichern!
 
-<!-- kevin:uml-diagram -->
+<!-- kevin-uml:start -->
+```text @plantUML
+@startuml
+skinparam classAttributeIconSize 0
+
+class Gruppe {
+    - name: string
+    + Name: string <<get>>
+}
+
+class Mannschaft {
+    - name: string
+    + Name: string <<get>>
+}
+
+class Spiel {
+    - spielId: string
+    - datum: DateTime
+    - uhrzeit: TimeSpan
+    - ergebnis: string
+    + SpielId: string <<get>>
+    + Ergebnis: string <<get>>
+    + setErgebnis(ergebnis: string): void
+}
+
+class WettQuote {
+    - wettTyp: string
+    - quote: double
+    + WettTyp: string <<get>>
+    + Quote: double <<get>>
+}
+
+class Benutzer {
+    - name: string
+    - guthaben: double
+    + Name: string <<get>>
+    + Guthaben: double <<get>>
+    + updateGuthaben(betrag: double): void
+}
+
+class Wette {
+    - wettTyp: string
+    - quote: double
+    - einsatz: double
+    + auswerten(ergebnis: string): double
+}
+
+class BettingSystemState {
+    - spiele: List<Spiel>
+    - benutzer: List<Benutzer>
+    - wetten: List<Wette>
+    - gruppen: List<Gruppe>
+    + addSpiel(spiel: Spiel): void
+    + addBenutzer(benutzer: Benutzer): void
+    + addWette(wette: Wette): void
+    + addGruppe(gruppe: Gruppe): void
+    + findSpielById(id: string): Spiel
+    + findBenutzerByName(name: string): Benutzer
+}
+
+class PersistenceManager {
+    + saveStateToJson(filePath: string, state: BettingSystemState): void
+    + loadStateFromJson(filePath: string): BettingSystemState
+}
+
+class CommandHandler {
+    - state: BettingSystemState
+    - persistence: PersistenceManager
+    + executeNew(): void
+    + executePrint(): void
+    + executeSet(spielId: string, typ: string, quote: double): void
+    + executeGet(spielId: string, typ: string): void
+    + executeBid(player: string, spielId: string, typ: string, amount: double): void
+    + executeResult(spielId: string, result: string): void
+}
+
+Gruppe "1" *-- "*" Mannschaft : enthält
+Spiel "*" -- "1" Mannschaft : heim
+Spiel "*" -- "1" Mannschaft : auswärts
+Spiel "1" *-- "*" WettQuote : besitzt
+Wette "*" -- "1" Benutzer : platziert von
+Wette "*" -- "1" Spiel : bezieht sich auf
+
+BettingSystemState "1" *-- "*" Spiel
+BettingSystemState "1" *-- "*" Benutzer
+BettingSystemState "1" *-- "*" Wette
+BettingSystemState "1" *-- "*" Gruppe
+
+CommandHandler ..> BettingSystemState : verwaltet
+CommandHandler ..> PersistenceManager : nutzt
+PersistenceManager ..> BettingSystemState : speichert/lädt
+
+note right of BettingSystemState : Zentrale Speicherklasse für den Systemzustand
+@enduml
+```
+@plantUML.eval(png)
+<!-- kevin-uml:end -->
